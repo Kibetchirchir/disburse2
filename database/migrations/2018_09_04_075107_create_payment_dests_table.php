@@ -22,6 +22,7 @@ class CreatePaymentDestsTable extends Migration
             $table->string('branchName')->nullable();
             $table->string('amount');
             $table->unsignedInteger('tempId')->index();
+            $table->string('BatchNo')->index();
             $table->timestamps();
         });
     }

@@ -10,6 +10,7 @@ use App\mode;
 use App\userRole;
 use App\client;
 use App\contacts;
+use App\Jobs\SendManagerEmail;
 
 class AdminController extends Controller
 {
@@ -153,6 +154,7 @@ class AdminController extends Controller
          */
         $this->validate($request,[
             'firstName' => 'required',
+            'email'  => 'required'
         ]);
         /**
          * check if its a company or personal
@@ -178,8 +180,14 @@ class AdminController extends Controller
         $client->nationality=$request->input('nationality');
         $client->password=bcrypt($password);
         $client->clientTypeId=$clientTypeId;
+        $client->email=$request->input('email');
 
         $client->save();
+        /**
+         * TOdo send emeail with the token
+         */
+
+        dispatch(new SendManagerEmail($client));
 
         return response()->json([
             'status'      => 'success',
@@ -187,7 +195,7 @@ class AdminController extends Controller
         ]);
     }
 
-    public function Registercontact(Request $request){
+    public function Registercontact(Request $request, $password){
         /**
          * validate
          */
@@ -218,6 +226,7 @@ class AdminController extends Controller
 
             $contact->save();
         }
+
 
         return response()->json([
             'status'      => 'success',

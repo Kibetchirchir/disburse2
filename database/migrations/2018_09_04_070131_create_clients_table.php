@@ -19,6 +19,7 @@ class CreateClientsTable extends Migration
             $table->string('secondName')->nullable();
             $table->string('nationality')->nullable();
             $table->string('password');
+            $table->string('email');
             $table->unsignedInteger('clientStatus')->default(0);
             $table->unsignedInteger('clientTypeId')->index();
             $table->timestamps();

@@ -94,7 +94,7 @@ Route::post('/addBeneficiary', [
     'as' => 'addBeneficiary',
     'uses' => 'Usercontroler@createNewBeneficiary',
 ]);
-Route::post('/testupload', [
+Route::post('/uploadbeneficiaries', [
     'as' => 'addBeneficiary',
-    'uses' => 'Usercontroler@import',
+    'uses' => 'Usercontroler@createNewBeneficiaries',
 ]);

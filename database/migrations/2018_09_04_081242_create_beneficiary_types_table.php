@@ -56,6 +56,8 @@ class CreateBeneficiaryTypesTable extends Migration
          */
         Schema::table('beneficiaries', function (Blueprint $table) {
             $table->foreign('beneficiaryTypeId')->references('beneficiaryTypeId')->on('beneficiary_types')->onDelete('cascade');
+            $table->foreign('clientId')->references('clientId')->on('clients')->onDelete('cascade');
+            $table->foreign('userId')->references('userId')->on('users')->onDelete('cascade');
         });
 
         /**

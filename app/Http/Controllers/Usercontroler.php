@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Session;
 use App\beneficiary;
 use App\paymentDest;
 use App\template;
 use Excel;
-use File;
+use Auth;
+use DB;
 
 
 class Usercontroler extends Controller
@@ -15,11 +17,12 @@ class Usercontroler extends Controller
     /**
      * Beneficiary one by one
      */
-    function createNewBeneficiary(Request $request){
-        $this->validate($request,[
+    function createNewBeneficiary(Request $request)
+    {
+        $this->validate($request, [
             "firstName" => 'required',
-             'secondName'=> 'required',
-             'identity' => 'required',
+            'secondName' => 'required',
+            'identity' => 'required',
             'contact' => 'required',
             'amount' => 'required'
         ]);
@@ -27,46 +30,46 @@ class Usercontroler extends Controller
         /**
          * beneficiary
          */
-        $beneficiary= new beneficiary;
+        $beneficiary = new beneficiary;
 
-        $beneficiary->firstName=$request->input('firstName');
-        $beneficiary->secondName=$request->input('secondName');
-        $beneficiary->identity=$request->input('identity');
-        $beneficiary->contact=$request->input('contact');
+        $beneficiary->firstName = $request->input('firstName');
+        $beneficiary->secondName = $request->input('secondName');
+        $beneficiary->identity = $request->input('identity');
+        $beneficiary->contact = $request->input('contact');
 
 
         $beneficiary->save();
         /**
          * retreive the beneficiaryID
          */
-        $beneficiaryId= $beneficiary->id;;
+        $beneficiaryId = $beneficiary->id;;
 
 
         /**
          * template
          */
-        $temp= new template;
+        $temp = new template;
 
         $temp->save();
 
         /**
          * retrieve the template ID
          */
-        $tempId=$temp->id;
+        $tempId = $temp->id;
 
         /**
          * payments
          */
 
-        $pay=new paymentDest;
+        $pay = new paymentDest;
 
-        $pay->modeId=$request->input('modeId');
-        $pay->beneficiaryId=$beneficiaryId;
-        $pay->account=$request->input('account');
-        $pay->bankName=$request->input('bankName');
-        $pay->branchName=$request->input('branchName');
-        $pay->amount=$request->input('amount');
-        $pay->tempId=$tempId;
+        $pay->modeId = $request->input('modeId');
+        $pay->beneficiaryId = $beneficiaryId;
+        $pay->account = $request->input('account');
+        $pay->bankName = $request->input('bankName');
+        $pay->branchName = $request->input('branchName');
+        $pay->amount = $request->input('amount');
+        $pay->tempId = $tempId;
 
         $pay->save();
 
@@ -75,103 +78,126 @@ class Usercontroler extends Controller
          */
 
         return response()->json([
-            'status'      => 'success',
-            'message'     => 'saved',
+            'status' => 'success',
+            'message' => 'saved',
         ]);
     }
 
     /**
      * uploading beneficiaries
      */
-    function createNewBeneficiaries(Request $request){
+    function createNewBeneficiaries(Request $request)
+    {
         /**
-         * uploading
+         * validate
          */
 
-        if($request->hasFile('file')){
-            $extension = File::extension($request->file->getClientOriginalName());
-            if ($extension == "xlsx" || $extension == "xls" || $extension == "csv") {
+        $this->validate($request, [
+            'file' => 'required'
+        ]);
 
-                $path = $request->file->getRealPath();
-                $data = Excel::load($path, function($reader) {
-                })->get();
-                if(!empty($data) && $data->count()){
+        /**
+         * upload
+         */
+        $the_file = Excel::load($request->file('file')->getRealPath(), function ($reader) {
+        })->get();
 
-                    foreach ($data as $key => $value) {
-                        $insert[] = [
-                            'name' => $value->name,
-                            'email' => $value->email,
-                            'phone' => $value->phone,
-                        ];
-                    }
+        if($the_file->count()){
+            /**
+             * template
+             */
+            $temp = new template;
+            $temp->tempName= Session::get('TempName');
+            $temp->save();
 
-                    if(!empty($insert)){
+            /**
+             * retrieve the template ID
+             */
+            $tempId = $temp->id;
 
-                        $insertData = DB::table('students')->insert($insert);
-                        if ($insertData) {
-                            Session::flash('success', 'Your Data has successfully imported');
-                        }else {
-                            Session::flash('error', 'Error inserting the data..');
-                            return back();
-                        }
-                    }
-                }
 
-                return back();
+            foreach ($the_file as $row) {
 
-            }else {
-                Session::flash('error', 'File is a '.$extension.' file.!! Please upload a valid xls/csv file..!!');
-                return back();
+                $firstName=$row['firstname'];
+                $secondName=$row['secondname'];
+                $Id=$row['id'];
+                $contact=$row['contact'];
+                $modeId=$row['mode_id'];
+                $account=$row['account'];
+                $bank=$row['bank'];
+                $branch=$row['branch'];
+                $amount=$row['amount'];
+
+
+                /**
+                 * first save the beneficiary
+                 */
+                $beneficiary = new beneficiary;
+
+                $beneficiary->firstName = $firstName;
+                $beneficiary->secondName = $secondName;
+                $beneficiary->identity = $Id;
+                $beneficiary->contact = $contact;
+                $beneficiary->userId= Auth::user()->userId;
+                $beneficiary->clientId=Auth::user()->clientId;
+
+
+                $beneficiary->save();
+                /*
+                 * retrieve the id
+                 */
+                $beneficiaryId = $beneficiary->id;;
+
+
+                /**
+                 * payments
+                 */
+
+                $pay = new paymentDest;
+
+                $pay->modeId = $modeId;
+                $pay->beneficiaryId = $beneficiaryId;
+                $pay->account = $account;
+                $pay->bankName = $bank;
+                $pay->branchName = $branch;
+                $pay->amount = $amount;
+                $pay->tempId = $tempId;
+
+                $pay->save();
+
+                /**
+                 * if everything is OK we return the response
+                 */
             }
+            /**
+             * get the queries for the template
+             */
+            
+
+
+
+            $client=DB::table('beneficiaries')
+                ->leftJoin('payment_dests', 'beneficiaries.beneficiaryId', '=', 'payment_dests.paymentDestId')
+                ->where('tempId', $tempId)
+                ->get();
+
+
+
+            return view('disburseConfirm')->with(['client'=> $client,
+            'tempId' => $tempId]);
         }
+
+        dd('Request data does not have any files to import.');
+
     }
 
-    /**
-     *
-     * test
-     */
-
-    public function import(Request $request){
-        //validate the xls file
-        $this->validate($request, array(
-            'file'      => 'required'
-        ));
-
-        if($request->hasFile('file')){
-            $extension = File::extension($request->file->getClientOriginalName());
-            if ($extension == "xlsx" || $extension == "xls" || $extension == "csv") {
-
-                $path = $request->file->getRealPath();
-                $data = Excel::load($path, function($reader) {
-                })->get();
-                if(!empty($data) && $data->count()){
-
-                    foreach ($data as $key => $value) {
-                        $insert[] = [
-                            'name' => $value->name,
-                            'email' => $value->email,
-                            'phone' => $value->phone,
-                        ];
-                    }
-
-                    if(!empty($insert)){
-
-                        $insertData = DB::table('students')->insert($insert);
-                        if ($insertData) {
-                            Session::flash('success', 'Your Data has successfully imported');
-                        }else {
-                            Session::flash('error', 'Error inserting the data..');
-                            return back();
-                        }
-                    }
-                }
-
-                return back();
-
-            }else {
-                Session::flash('error', 'File is a '.$extension.' file.!! Please upload a valid xls/csv file..!!');
-                return back();
-            }
-        }
+    public function disburseStep2(Request $request){
+        $this->validate($request,[
+            "TempName" => 'required'
+        ]);
+        $TempName=$request->input('TempName');
+        Session::put('TempName' , $TempName);
+        return view('disburseUpload2')->with('TempName',$TempName);
     }
+
 }

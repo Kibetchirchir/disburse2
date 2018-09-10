@@ -19,6 +19,8 @@ class CreateBeneficiariesTable extends Migration
             $table->string('secondName')->nullable();
             $table->string('identity')->nullable();
             $table->string('contact')->nullable();
+            $table->unsignedInteger('userId')->index();
+            $table->unsignedInteger('clientId')->index();
             $table->unsignedInteger('beneficiaryTypeId')->nullable()->index();
             $table->timestamps();
         });
