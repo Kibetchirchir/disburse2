@@ -30,7 +30,7 @@ class ManagerAccActivation extends Mailable
     public function build()
     {
         return $this->view('email.manager')->with([
-            'email_token'=> $this->client->email_token,
+            'email_token'=> $this->client->password,
         ]);
     }
 }

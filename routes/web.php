@@ -54,7 +54,13 @@ Route::get('/test/{batchNo}', function () {
 /**
  * Disbursing
  */
-Route::post('/disburse', [
+Route::post('{tempId}/disburse', [
     'as' => 'disburse',
     'uses' => 'Disburse@disburse',
 ]);
+/**
+ * successful disbursed
+ */
+Route::get('/success', function () {
+    return view('confirmed');
+})->name('confirmed');

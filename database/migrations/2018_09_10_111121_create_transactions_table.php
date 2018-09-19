@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePaymentDestsTable extends Migration
+class CreateTransactionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,19 @@ class CreatePaymentDestsTable extends Migration
      */
     public function up()
     {
-        Schema::create('payment_dests', function (Blueprint $table) {
-            $table->increments('paymentDestId');
+        Schema::create('transactions', function (Blueprint $table) {
+            $table->increments('transId');
+            $table->string('transRefNo');
+            $table->string('narration')->nullable();
             $table->unsignedInteger('modeId')->index();
-            $table->unsignedInteger('beneficiaryId')->index();
+            $table->unsignedInteger('clientId')->index();
+            $table->unsignedInteger('userId')->index();
+            $table->integer('status')->default(0);
+            $table->string('name');
             $table->string('account');
             $table->string('bankName')->nullable();
             $table->string('branchName')->nullable();
-            $table->string('amount');
-            $table->string('narration')->nullable();
-            $table->unsignedInteger('tempId')->index();
+            $table->string('batch_no');
             $table->timestamps();
         });
     }
@@ -34,6 +37,6 @@ class CreatePaymentDestsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('payment_dests');
+        Schema::dropIfExists('transactions');
     }
 }

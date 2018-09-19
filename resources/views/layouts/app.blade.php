@@ -419,7 +419,7 @@
                                     <div class="account-dropdown js-dropdown">
                                         <div class="info clearfix">
                                             <div class="image">
-                                                <a href="#">
+                                                <a href="">
                                                     {{--<img src="images/icon/avatar-01.jpg" alt="John Doe" />--}}
                                                 </a>
                                             </div>
@@ -449,7 +449,7 @@
                                             </div>
                                         </div>
                                         <div class="account-dropdown__footer">
-                                            <a href="#">
+                                            <a href="{{ route('logout') }}">
                                                 <i class="zmdi zmdi-power"></i>Logout</a>
                                         </div>
                                     </div>

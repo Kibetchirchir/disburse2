@@ -160,10 +160,10 @@ class AdminController extends Controller
          * check if its a company or personal
          */
         if($request->input('secondName') == null){
-            $clientTypeId=1;
+            $clientTypeId=2;
         }
         else{
-            $clientTypeId=3;
+            $clientTypeId=1;
         }
 
         /**
@@ -184,7 +184,7 @@ class AdminController extends Controller
 
         $client->save();
         /**
-         * TOdo send emeail with the token
+         * sending email
          */
 
         dispatch(new SendManagerEmail($client));

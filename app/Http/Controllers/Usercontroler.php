@@ -146,7 +146,7 @@ class Usercontroler extends Controller
                 /*
                  * retrieve the id
                  */
-                $beneficiaryId = $beneficiary->id;;
+                $beneficiaryId = $beneficiary->id;
 
 
                 /**

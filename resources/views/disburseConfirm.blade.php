@@ -246,14 +246,11 @@
                         <?php
                         $batchNo=12;
                         ?>
-                        <div class="left">
-                            <a
-
-                                    data-modal-id="EditAttendee"
-                                    href="javascript:void(0);"
-                                    data-href="{{route('disburse', ['tempId'=>$tempId])}}"
-                                    class="loadModal btn btn-xs btn-primary"
-                            > submit</a>
+                        <div class="footer">
+                            {!! Form::open(array('url' => route('disburse', array('tempId' => $tempId)))) !!}
+                            {!! Form::button('Cancel', ['class'=>"btn modal-close btn-danger",'data-dismiss'=>'modal']) !!}
+                            {!! Form::submit('Disburse', ['class'=>"btn btn-success"]) !!}
+                            {!! Form::close() !!}
                         </div>
                         </div>
                     </div>
