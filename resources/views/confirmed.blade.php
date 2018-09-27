@@ -67,11 +67,11 @@
             <div class="order_details well">
                 <div class="row">
                     <div class="col-sm-4 col-xs-6">
-                        <b>BatchNo</b><br>{{$batch}}
+                        <b>BatchNo</b><br>{{session('batch')}}
                     </div>
 
                     <div class="col-sm-4 col-xs-6">
-                        <b>Amount</b><br>{{$amount}}
+                        <b>Amount</b><br>{{session('amount')}}
                     </div>
 
                     {{--<div class="col-sm-4 col-xs-6">--}}

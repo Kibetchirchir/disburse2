@@ -80,7 +80,10 @@ class Disburse extends Controller
             "amount" => $amount
         ];
 
-        return route('confirmed')->with(['batch'=> $batchNo,
-            'amount' => $amount]);
+        //return view('confirmed')->with(['batch'=> $batchNo,'amount' => $amount]);
+
+        return redirect('/success')->with(['batch'=> $batchNo,'amount' => $amount]);
+
+        //return view('confirmed', ['batch'=> $batchNo,'amount' => $amount]);
     }
 }
